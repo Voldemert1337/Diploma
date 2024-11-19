@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to right, #001f3f, #0074D9);
+            padding: 20px 0;
+            color: white;
+            min-height: 100vh; /* Занимает всю высоту экрана */
+        }
+    </style>
+</head>
+<body>
+<section class="gradient-bg">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="text-uppercase text-center mb-5">Вход в аккаунт</h2>
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <!-- Выводим ошибки формы -->
+                            {% if form.username.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.username.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.password.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.password.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Поля формы -->
+                            {{ form.as_p }}
+
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                    Войти
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="text-center text-muted mt-5 mb-0">
+                            Нет аккаунта? <a href="{% url 'register' %}" class="fw-bold text-body"><u>Зарегистрируйтесь здесь</u></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

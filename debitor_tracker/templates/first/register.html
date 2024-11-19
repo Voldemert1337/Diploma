@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <style>
+        .gradient-bg {
+      background: linear-gradient(to right, #001f3f, #0074D9); /* Пример градиента слева направо от темно-синего к ярко-синему */
+      padding: 20px 0; /* Внутренние отступы сверху и снизу */
+      color: white; /* Цвет текста */
+    }
+    </style>
+</head>
+<body>
+<section class="gradient-bg">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h2 class="text-uppercase text-center mb-5">Создание аккаунта</h2>
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <!-- Выводим ошибки валидации для имени пользователя -->
+                            {% if form.username.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.username.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Выводим все поля формы -->
+                            {{ form.as_p }}
+
+                            <!-- Выводим ошибки валидации для паролей -->
+                            {% if form.password.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.password.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.password2.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.password2.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                    Регистрация
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="text-center text-muted mt-5 mb-0">
+                            Уже есть аккаунт? <a href="{% url 'login' %}" class="fw-bold text-body"><u>Войдите здесь</u></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
