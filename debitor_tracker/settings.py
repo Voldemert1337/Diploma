@@ -145,13 +145,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 
 
-CELERY_BEAT_SCHEDULE = {
-    'check-subscriptions-every-day': {
-        'task': 'myapp.tasks.check_user_subscriptions',
-        'schedule': crontab(hour=0, minute=0),  # Выполнять каждый день в полночь
-    },
-}
-
-CELERY_TIMEZONE = 'UTC'
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
