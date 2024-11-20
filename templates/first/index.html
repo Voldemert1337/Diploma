@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debtor Tracker</title>
+
+  <!-- Подключение Bootstrap из локальной папки static -->
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+  <!-- Подключение animate.css для анимаций -->
+  <link rel="stylesheet" href="{% static 'animate.css/animate.min.css' %}"/>
+
+  <!-- Ваш CSS -->
+  <style>
+
+    /* Градиент для верхней части страницы */
+    .gradient-bg {
+      background: linear-gradient(to right, #001f3f, #0074D9); /* Пример градиента слева направо от темно-синего к ярко-синему */
+      padding: 20px 0; /* Внутренние отступы сверху и снизу */
+      color: white; /* Цвет текста */
+    }
+
+    .gradient-container {
+      background: linear-gradient(to right, #50abeb, #020024); /* Пример градиента слева направо */
+      padding: 20px; /* Внутренние отступы */
+      border-radius: 15px; /* Скругленные углы */
+      color: white; /* Цвет текста */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Небольшая тень для визуальной глубины */
+      margin-bottom: 30px; /* Отступ снизу */
+      animation: fadeIn 1s ease-out; /* Анимация появления */
+    }
+
+    .card-transparent {
+      background-color: rgba(255, 255, 255, 0.3); /* Полупрозрачный белый фон */
+      border: none; /* Убираем границу */
+      opacity: 0; /* Изначально скрываем карточки */
+      transform: translateY(20px); /* Небольшое смещение вниз для эффекта */
+      animation: fadeInUp 0.5s ease-out forwards; /* Анимация появления */
+    }
+
+    .card-delay-1 {
+      animation-delay: 0.5s; /* Задержка для первой карточки */
+    }
+
+    .card-delay-2 {
+      animation-delay: 0.8s; /* Задержка для второй карточки */
+    }
+
+    .card-delay-3 {
+      animation-delay: 1.1s; /* Задержка для третьей карточки */
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Настройка внутреннего контейнера */
+    .content {
+      padding: 20px; /* Внутренние отступы */
+      color: white; /* Цвет текста внутри контейнера */
+    }
+
+    /* Анимация выезда текста */
+    @keyframes slideInFromLeft {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .slide-in {
+      animation: slideInFromLeft 1s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Контейнер с градиентом -->
+  <div class="gradient-bg">
+    <!-- Включение меню -->
+    {% include 'first/menu.html' %}
+
+    <!-- Контейнер для основного контента -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="content">
+            <!-- Добавление анимации выезда к заголовку -->
+            <h1 class="slide-in">Добро пожаловать</h1>
+            <h1 class="slide-in"> на Дебитор-Трекер!</h1>
+            <p class="slide-in">Мы рады приветствовать вас на нашей платформе, созданной специально для торговых представителей.
+              Дебитор-Трекер помогает вам экономить время и избегать финансовых рисков,
+              предоставляя актуальную информацию о статусе торговых точек в базе дебиторов и
+              упрощая процесс добавления новых точек.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Основной контейнер с преимуществами -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="gradient-container">
+          <h1 class="text-center">Наши преимущества:</h1>
+          <div class="row">
+            <!-- Карточка 1 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-1">
+
+                <div class="card-header">
+                  <i class="bi bi-arrow-repeat">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                          <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                          <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                      </svg>
+                  </i>
+
+                  Быстрая проверка статуса
+
+                </div>
+
+                <div class="card-body">
+                  <p class="card-text">Узнавайте статус торговых точек в режиме реального времени.</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 2 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-2">
+                <div class="card-header">
+                  <i class="bi bi-border-style">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-border-style" viewBox="0 0 16 16">
+                          <path d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm8 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-4 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm8 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-4-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                  </i>
+                  Удобный интерфейс</div>
+                <div class="card-body">
+                  <p class="card-text">Используйте наш простой и удобный интерфейс, чтобы найти и добавить точки.</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 3 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-3">
+                <div class="card-header">
+                  <i class="bi bi-check-circle">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 20 20">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                      </svg>
+                  </i>
+                  Актуальная информация</div>
+                <div class="card-body">
+                  <p class="card-text">Мы предоставляем только самую свежую и точную информацию.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="gradient-container">
+          <h1 class="text-center">Как формируется база данных в Дебитор-Трекер?</h1>
+          <p class="text-center">На платформе «Дебитор-Трекер» база данных формируется непосредственно самими торговыми представителями.
+            Каждый пользователь сайта, являясь торговым представителем, может добавить информацию о торговых точках и клиентах,
+            с которыми он работает. Этот процесс прост и интуитивно понятен:</p>
+          <div class="row">
+            <!-- Карточка 1 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-1">
+                <div class="card-header">Добавление торговых точек </div>
+                <div class="card-body">
+                  <p class="card-text">Торговый представитель вводит данные о новых торговых точках, такие как название, адрес,
+                    контактные данные и другие важные сведения. Это позволяет создать подробную карту всех объектов</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 2 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-2">
+                <div class="card-header">Идентификация дебиторов</div>
+                <div class="card-body">
+                  <p class="card-text">Каждый клиент, с которым работает представитель, помечается как дебитор.
+                    Торговый представитель может указать статус задолженности, сумму долга,
+                    историю платежей и другие ключевые данные для отслеживания финансовых обязательств.</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 3 -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-3">
+                <div class="card-header">Обновление и актуализация данных</div>
+                <div class="card-body">
+                  <p class="card-text">Информация о торговых точках и дебиторах постоянно обновляется в
+                    режиме реального времени. Торговые представители могут вносить изменения,
+                    добавлять новые данные и следить за динамикой изменения задолженности.</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 4  -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-2">
+                <div class="card-header">Автоматизация и статистика</div>
+                <div class="card-body">
+                  <p class="card-text">На основе введенной информации система автоматически генерирует отчеты, напоминания и статистику,
+                    что позволяет представителям эффективно управлять задолженностями и
+                    планировать дальнейшие шаги</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 5  -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-2">
+                <div class="card-header">Проверка информации</div>
+                <div class="card-body">
+                  <p class="card-text">Для предотвращения ошибок или возможных фальсификаций вся информация, введённая пользователями, проходит обязательную проверку специалистами.
+                    Это гарантирует точность и надёжность данных, что минимизирует риск
+                    информационного вброса</p>
+                </div>
+              </div>
+            </div>
+            <!-- Карточка 6  -->
+            <div class="col-md-4">
+              <div class="card card-transparent text-white mb-3 card-delay-2">
+                <div class="card-header">Функционал для репортов</div>
+                <div class="card-body">
+                  <p class="card-text">В ближайшее время будет добавлен функционал для создания репортов, который позволит эффективно удалять неверную или апеллированную информацию,
+                    обеспечивая еще большую точность и прозрачность данных</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Подключение Bootstrap JS из локальной папки static -->
+  <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

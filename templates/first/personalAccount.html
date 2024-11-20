@@ -1,0 +1,455 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+
+    <!-- Подключение Bootstrap -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+    <!-- Подключение DataTables -->
+    <link rel="stylesheet" type="text/css" href="{% static 'datatables/datatables.min.css' %}">
+
+    <style>
+        /* Градиент для верхней части страницы */
+        .gradient-bg {
+            background: linear-gradient(to right, #001f3f, #0074D9);
+            padding: 20px 0;
+            color: white;
+        }
+
+        /* Стили для таблицы с границей */
+        .table-container {
+            border: 2px solid #0074D9; /* Граница таблицы */
+            border-radius: 10px; /* Скругление углов */
+            padding: 15px; /* Внутренний отступ */
+            background-color: #f8f9fa; /* Фон */
+        }
+
+        /* Стили для правой панели */
+        .info-panel {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #ffffff;
+        }
+
+            /* Базовый цвет иконки */
+        .icon-pencil {
+            color: black; /* Исходный цвет */
+            transition: color 0.3s ease; /* Плавный переход цвета */
+        }
+
+        /* Цвет при наведении курсора */
+        .icon-pencil:hover {
+            color: #007bff; /* Синий цвет, например, для эффекта */
+            transform: scale(10.2); /* Увеличивает размер на 20% */
+        }
+
+        .custom-button {
+            margin-top: 4mm; /* Отступ сверху на 1 мм */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="gradient-bg">
+        {% include 'first/menu.html' %}
+    </div>
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Левая колонка с таблицей -->
+            <div class="col-md-8">
+                <div class="table-container">
+                    <h1>Мой Дебиторы</h1>
+                    {% if user.is_authenticated %}
+                    <div class="table-responsive">
+                        <table id="addDebtor" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Имя</th>
+                                    <th>Фамилия</th>
+                                    <th>Сумма долга</th>
+                                    <th>Адрес</th>
+                                    <th>Дата добавления</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 {% for debtor in request.user.adddebtoruser_set.all %}
+                                 <tr>
+                                     <td>{{ debtor.name }}</td>
+                                     <td>{{ debtor.surname }}</td>
+                                     <td>{{ debtor.amount }}</td>
+                                     <td>{{ debtor.address}}</td>
+                                     <td>{{ debtor.created_at }}</td>
+                                     <td>{{ debtor.get_status_display }}</td>
+                                    <td>
+                                        <a href="#"
+   class="btn btn-sm btn-warning"
+   data-bs-toggle="modal"
+   data-bs-target="#editDebtorModal"
+   data-id="{{ debtor.id }}"
+   data-name="{{ debtor.name }}"
+   data-surname="{{ debtor.surname }}"
+   data-amount="{{ debtor.amount }}"
+   data-address="{{ debtor.address }}"
+   data-region="{{ debtor.region }}"
+   data-city="{{ debtor.city }}"
+   data-document="{{ debtor.document.url }}">
+   Редактировать
+</a>
+
+
+
+                                       <a href="{% url 'delete_debtor' debtor.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены, что хотите удалить дебитора?');">Удалить</a>
+
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5">Нет заявок</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            {% for debtor in request.user.adddebtoruser_set.all %}
+                            <p>Debtor ID: {{ debtor.id }}</p>
+
+                            <!-- Модальное окно для редактирования дебитора -->
+                            <div class="modal fade" id="editDebtorModal" tabindex="-1" aria-labelledby="editDebtorModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editDebtorModalLabel">Редактирование дебитора</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST" action="{% url 'edit_debtor' debtor_id=debtor.id %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="nameInput" class="form-label">Имя дебитора</label>
+                                                    <input type="text" class="form-control" id="nameInput" name="name" value="{{ debtor.name }}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="surnameInput" class="form-label">Фамилия дебитора</label>
+                                                    <input type="text" class="form-control" id="surnameInput" name="surname" value="{{ debtor.surname }}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="amountInput" class="form-label">Сумма долга</label>
+                                                    <input type="number" class="form-control" id="amountInput" name="amount" value="{{ debtor.amount }}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="addressInput" class="form-label">Адрес</label>
+                                                    <textarea class="form-control" id="addressInput" name="address">{{ debtor.address }}</textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="regionInput" class="form-label">Регион</label>
+                                                    <input type="text" class="form-control" id="regionInput" name="region" value="{{ debtor.region }}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="cityInput" class="form-label">Город</label>
+                                                    <input type="text" class="form-control" id="cityInput" name="city" value="{{ debtor.city }}">
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                        {% for debtor in request.user.adddebtoruser_set.all %}
+                        <div class="modal fade" id="deleteDebtorModal{{ debtor.id }}" tabindex="-1" aria-labelledby="deleteDebtorModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteDebtorModalLabel">Подтвердите удаление</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Вы уверены, что хотите удалить дебитора {{ debtor.name }} {{ debtor.surname }}?</p>
+                                        <form method="POST" action="{% url 'delete_debtor' debtor.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Удалить</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    {% else %}
+                    <p>Вы не авторизованы. Пожалуйста, войдите, чтобы увидеть информацию.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Правая колонка с информацией -->
+            <div class="col-md-4">
+                <div class="info-panel">
+                    <h2>Информация</h2>
+                    {% if user.is_authenticated %}
+                    <p>Информация об аккаунте</p>
+                    <ul>
+                        <li>Имя: {{ user.name }}
+                        <i class="bi bi-pencil-square icon-pencil"  data-bs-toggle="modal" data-bs-target="#editFullNameModal" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                            </svg>
+                        </i>
+
+                        </li>
+                        <li>Фамилия: {{ user.surname }}</li>
+                        <li>Email: {{ user.email }}
+                        <i class="bi bi-pencil-square icon-pencil"  data-bs-toggle="modal" data-bs-target="#editEmailModal" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                            </svg>
+                        </i>
+                        </li>
+                        <li>Телеграмм:
+                            {% if user.tg_account %}
+                            {{user.tg_account}}
+                            <i class="bi bi-pencil-square icon-pencil" data-bs-toggle="modal" data-bs-target="#editTelegramModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                </svg>
+                            </i>
+                            {% else %}
+                            Не указан
+                            <i class="bi bi-pencil-square icon-pencil" data-bs-toggle="modal" data-bs-target="#editTelegramModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                </svg>
+                            </i>
+
+                            {% endif %}
+                        </li>
+                        <li>Дата регистрации: {{user.created_at}}</li>
+
+                        <li>Добавлено заявок:
+                            {% if request_count %}
+                            {{ request_count }}
+                            {% else %}
+                            0
+                            {% endif %}
+                        </li>
+                        <li>Одобрено заявок:
+                            {% if approved_count %}
+                            {{ approved_count }}
+                            {% else %}
+                            0
+                            {% endif %}
+                        </li>
+                        <li>Отклонено заявок:
+                            {% if rejected_count %}
+                            {{ rejected_count }}
+                            {% else %}
+                            0
+                            {% endif %}
+                        </li>
+                    </ul>
+                    <div class="modal fade" id="editTelegramModal" tabindex="-1" aria-labelledby="editTelegramModalLabel" aria-hidden="true">
+                         <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editTelegramModalLabel">Редактирование Telegram</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'update_telegram' %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="telegramInput" class="form-label">Введите новый Telegram</label>
+                                            <input type="text" class="form-control" id="telegramInput" name="telegram" placeholder="Ваш Telegram">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="editFullNameModal" tabindex="-1" aria-labelledby="editFullNameModalLabel" aria-hidden="true">
+                         <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editFullNameModalLabel">Редактирование Имени и Фамилии</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'update_full_name' %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="nameInput" class="form-label">Введите новое Имя</label>
+                                            <input type="text" class="form-control" id="nameInput" name="name" placeholder="Ваше имя">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="surnameInput" class="form-label">Введите новую Фамилию</label>
+                                            <input type="text" class="form-control" id="surnameInput" name="surname" placeholder="Ваша Фамилия">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailModalLabel" aria-hidden="true">
+                         <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editEmailModalLabel">Редактирование Email</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'update_email' %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="EmailInput" class="form-label">Введите новый Email</label>
+                                            <input type="text" class="form-control" id="EmailInput" name="email" placeholder="Ваш Email">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary custom-button" data-bs-toggle="modal" data-bs-target="#addDebtorModal">
+                        Добавить дебитора
+                    </button>
+                    <!-- Модальное окно -->
+                    <div class="modal fade" id="addDebtorModal" tabindex="-1" aria-labelledby="addDebtorModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addDebtorModalLabel">Добавить дебитора</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'add_debtor' %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Имя</label>
+                                            <input type="text" class="form-control" id="name" name="name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="surname" class="form-label">Фамилия</label>
+                                            <input type="text" class="form-control" id="surname" name="surname" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="amount" class="form-label">Сумма долга</label>
+                                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Адрес</label>
+                                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="region" class="form-label">Регион</label>
+                                            <input type="text" class="form-control" id="region" name="region" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="city" class="form-label">Город</label>
+                                            <input type="text" class="form-control" id="city" name="city" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="document" class="form-label">Прикрепить документ</label>
+                                            <input type="file" class="form-control" id="document" name="document" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Добавить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'change_password' %}" class="btn btn-primary mt-3">Сменить пароль</a>
+                    {% else %}
+                    <p>Вы не авторизованы. Пожалуйста, войдите, чтобы увидеть информацию.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Подключение Bootstrap -->
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Подключение DataTables -->
+    <script type="text/javascript" charset="utf8" src="{% static 'datatables/datatables.min.js' %}"></script>
+
+    <script>
+        console.log('Starting script...');
+        $(document).ready(function() {
+            $('#addDebsor').DataTable({
+                responsive: true,
+                paging: true,
+                searching: true,
+                ordering: true,
+                language: {
+                    url: "{% static 'datatables/lang/ru.js' %}"
+                }
+            });
+        });
+    </script>
+    <script>
+        console.log('Starting script...');
+    $('#editDebtorModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);  // Кнопка, которая вызвала модальное окно
+    var debtorId = button.data('id');  // Получаем ID дебитора
+    var name = button.data('name');
+    var surname = button.data('surname');
+    var amount = button.data('amount');
+    var address = button.data('address');
+    var region = button.data('region');
+    var city = button.data('city');
+    var document = button.data('document');
+
+
+
+    // Заполняем поля формы данными дебитора
+    var modal = $(this);
+    modal.find('#nameInput').val(name);
+    modal.find('#surnameInput').val(surname);
+    modal.find('#amountInput').val(amount);
+    modal.find('#addressInput').val(address);
+    modal.find('#regionInput').val(region);
+    modal.find('#cityInput').val(city);
+    modal.find('#documentInput').val(document);
+
+
+    // Формируем правильный URL для отправки формы
+    var actionUrl = "/edit-debtor/" + debtorId + "/";
+    modal.find('form').attr('action', actionUrl);
+});
+
+</script>
+
+
+
+
+</body>
+</html>
