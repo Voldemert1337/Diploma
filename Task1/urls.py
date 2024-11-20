@@ -19,5 +19,9 @@ urlpatterns = [
     path('update_email', views.update_email, name='update_email'),
     path('add-debtor/', views.add_debtor, name='add_debtor'),
     path('edit-debtor/<int:debtor_id>/', views.edit_debtor, name='edit_debtor'),
-    path('delete-debtor/<int:debtor_id>/', views.delete_debtor, name='delete_debtor')
+    path('request_deletion/<int:debtor_id>/', views.request_deletion, name='request_deletion'),
+path('delete-debtor/<int:debtor_id>/', views.request_deletion, name='delete_debtor'),
+
 ]
+
+

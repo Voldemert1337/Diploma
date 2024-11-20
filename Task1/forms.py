@@ -127,3 +127,7 @@ class DebtorRequestForm(forms.ModelForm):
             if not document:
                 raise forms.ValidationError('Необходимо загрузить документ.')
             return document
+
+class DeletionRequestForm(forms.Form):
+    reason = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Укажите причину удаления'}), required=True)
+    document = forms.FileField(required=False)

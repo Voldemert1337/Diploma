@@ -100,23 +100,27 @@
                                      <td>{{ debtor.get_status_display }}</td>
                                     <td>
                                         <a href="#"
-   class="btn btn-sm btn-warning"
-   data-bs-toggle="modal"
-   data-bs-target="#editDebtorModal"
-   data-id="{{ debtor.id }}"
-   data-name="{{ debtor.name }}"
-   data-surname="{{ debtor.surname }}"
-   data-amount="{{ debtor.amount }}"
-   data-address="{{ debtor.address }}"
-   data-region="{{ debtor.region }}"
-   data-city="{{ debtor.city }}"
-   data-document="{{ debtor.document.url }}">
-   Редактировать
-</a>
+                                           class="btn btn-sm btn-warning"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#editDebtorModal"
+                                           data-id="{{ debtor.id }}"
+                                           data-name="{{ debtor.name }}"
+                                           data-surname="{{ debtor.surname }}"
+                                           data-amount="{{ debtor.amount }}"
+                                           data-address="{{ debtor.address }}"
+                                           data-region="{{ debtor.region }}"
+                                           data-city="{{ debtor.city }}"
+                                           data-document="{{ debtor.document.url }}">
+                                           Редактировать
+                                        </a>
 
 
 
-                                       <a href="{% url 'delete_debtor' debtor.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены, что хотите удалить дебитора?');">Удалить</a>
+                                       <!-- Кнопка для вызова модального окна -->
+                                          <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                      data-debtor-id="{{ debtor.id }}" data-debtor-name="{{ debtor.name }}">
+                                                      Удалить
+                                          </button>
 
                                     </td>
                                 </tr>
@@ -127,72 +131,89 @@
                                 {% endfor %}
                             </tbody>
                             {% for debtor in request.user.adddebtoruser_set.all %}
-                            <p>Debtor ID: {{ debtor.id }}</p>
-
-                            <!-- Модальное окно для редактирования дебитора -->
-                            <div class="modal fade" id="editDebtorModal" tabindex="-1" aria-labelledby="editDebtorModalLabel" aria-hidden="true">
+                             <!-- Модальное окно для редактирования данных дебитора -->
+                            <div class="modal" id="editDebtorModal" tabindex="-1" aria-labelledby="editDebtorModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="editDebtorModalLabel">Редактирование дебитора</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form method="POST" action="{% url 'edit_debtor' debtor_id=debtor.id %}">
+                                            <form method="POST" action="">
                                                 {% csrf_token %}
                                                 <div class="mb-3">
-                                                    <label for="nameInput" class="form-label">Имя дебитора</label>
-                                                    <input type="text" class="form-control" id="nameInput" name="name" value="{{ debtor.name }}">
+                                                    <label for="nameInput" class="form-label">Имя</label>
+                                                    <input type="text" class="form-control" id="nameInput" name="name">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="surnameInput" class="form-label">Фамилия дебитора</label>
-                                                    <input type="text" class="form-control" id="surnameInput" name="surname" value="{{ debtor.surname }}">
+                                                    <label for="surnameInput" class="form-label">Фамилия</label>
+                                                    <input type="text" class="form-control" id="surnameInput" name="surname">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="amountInput" class="form-label">Сумма долга</label>
-                                                    <input type="number" class="form-control" id="amountInput" name="amount" value="{{ debtor.amount }}">
+                                                    <input type="text" class="form-control" id="amountInput" name="amount">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="addressInput" class="form-label">Адрес</label>
-                                                    <textarea class="form-control" id="addressInput" name="address">{{ debtor.address }}</textarea>
+                                                    <input type="text" class="form-control" id="addressInput" name="address">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="regionInput" class="form-label">Регион</label>
-                                                    <input type="text" class="form-control" id="regionInput" name="region" value="{{ debtor.region }}">
+                                                    <input type="text" class="form-control" id="regionInput" name="region">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="cityInput" class="form-label">Город</label>
-                                                    <input type="text" class="form-control" id="cityInput" name="city" value="{{ debtor.city }}">
+                                                    <input type="text" class="form-control" id="cityInput" name="city">
                                                 </div>
-
-                                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                                                <div class="mb-3">
+                                                    <label for="documentInput" class="form-label">Документ (если требуется)</label>
+                                                    <input type="file" class="form-control" id="documentInput" name="document" accept=".pdf,.doc,.docx,.jpg,.png">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
                                             </form>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+
+
+
+
+
+
                         {% endfor %}
                         {% for debtor in request.user.adddebtoruser_set.all %}
-                        <div class="modal fade" id="deleteDebtorModal{{ debtor.id }}" tabindex="-1" aria-labelledby="deleteDebtorModalLabel" aria-hidden="true">
+                                <!-- Модальное окно -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteDebtorModalLabel">Подтвердите удаление</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <h5 class="modal-title" id="deleteModalLabel">Запрос на удаление дебитора</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <p>Вы уверены, что хотите удалить дебитора {{ debtor.name }} {{ debtor.surname }}?</p>
-                                        <form method="POST" action="{% url 'delete_debtor' debtor.id %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger">Удалить</button>
+                                    <form id="deleteDebtorForm" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <p>Вы уверены, что хотите удалить дебитора <strong id="debtorName"></strong>?</p>
+                                            <div class="mb-3">
+                                                <label for="reasonInput" class="form-label">Причина удаления</label>
+                                                <textarea class="form-control" id="reasonInput" name="reason" rows="3" required></textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        </form>
-                                    </div>
+                                            <button type="submit" class="btn btn-danger">Отправить запрос</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+
+
+
                         {% endfor %}
                         </table>
                     </div>
@@ -416,38 +437,64 @@
         });
     </script>
     <script>
-        console.log('Starting script...');
+    console.log('Starting script...');
     $('#editDebtorModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);  // Кнопка, которая вызвала модальное окно
-    var debtorId = button.data('id');  // Получаем ID дебитора
-    var name = button.data('name');
-    var surname = button.data('surname');
-    var amount = button.data('amount');
-    var address = button.data('address');
-    var region = button.data('region');
-    var city = button.data('city');
-    var document = button.data('document');
+        var button = $(event.relatedTarget);  // Кнопка, которая вызвала модальное окно
+        var debtorId = button.data('id');  // Получаем ID дебитора
+        var name = button.data('name');
+        var surname = button.data('surname');
+        var amount = button.data('amount');
+        var address = button.data('address');
+        var region = button.data('region');
+        var city = button.data('city');
 
 
+        // Логирование данных в консоль для отладки
+        console.log('Debtor ID: ' + debtorId);
+        console.log('Name: ' + name);
+        console.log('Surname: ' + surname);
+        console.log('Amount: ' + amount);
+        console.log('Address: ' + address);
+        console.log('Region: ' + region);
+        console.log('City: ' + city);
+        console.log('Document URL: ' + document);
 
-    // Заполняем поля формы данными дебитора
-    var modal = $(this);
-    modal.find('#nameInput').val(name);
-    modal.find('#surnameInput').val(surname);
-    modal.find('#amountInput').val(amount);
-    modal.find('#addressInput').val(address);
-    modal.find('#regionInput').val(region);
-    modal.find('#cityInput').val(city);
-    modal.find('#documentInput').val(document);
+        // Заполняем поля формы данными дебитора
+        var modal = $(this);
+        modal.find('#nameInput').val(name);
+        modal.find('#surnameInput').val(surname);
+        modal.find('#amountInput').val(amount);
+        modal.find('#addressInput').val(address);
+        modal.find('#regionInput').val(region);
+        modal.find('#cityInput').val(city);
 
 
-    // Формируем правильный URL для отправки формы
-    var actionUrl = "/edit-debtor/" + debtorId + "/";
-    modal.find('form').attr('action', actionUrl);
+        // Формируем правильный URL для отправки формы
+        var actionUrl = "/edit-debtor/" + debtorId + "/";
+        modal.find('form').attr('action', actionUrl);
+    });
+    </script>
+
+
+<script>
+    // Ловим событие перед открытием модального окна
+const deleteModal = document.getElementById('deleteModal');
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    // Кнопка, которая вызвала модальное окно
+    const button = event.relatedTarget;
+    const debtorId = button.getAttribute('data-debtor-id');
+    const debtorName = button.getAttribute('data-debtor-name');
+
+    // Обновляем содержимое модального окна
+    const modalBodyName = document.getElementById('debtorName');
+    modalBodyName.textContent = debtorName;
+
+    // Обновляем форму для удаления
+    const deleteForm = document.getElementById('deleteDebtorForm');
+    deleteForm.action = `/delete-debtor/${debtorId}/`; // Динамическая ссылка на обработчик
 });
 
 </script>
-
 
 
 

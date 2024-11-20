@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-@&omt5b7_qd(%+j1krfcmj9)=5patk56+l)*@mdnm(fysvj=i8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.14']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
     'rest_framework',
     'Task1',
 ]
@@ -133,15 +132,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
 
-# Настройки Celery
-CELERY_BROKER_URL = 'django-db'
-CELERY_RESULT_BACKEND = 'django-db'
-
-INSTALLED_APPS += ['django_celery_results']
-
-# Другие настройки Celery (опционально)
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
 
 
 
