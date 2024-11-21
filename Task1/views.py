@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import UserRegistrationForm, LoginForm, DebtorRequestForm, DeletionRequestForm
@@ -10,180 +11,147 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal, InvalidOperation
 
+# Логирование для отслеживания действий
+logger = logging.getLogger(__name__)
 
 
 def index(request):
+    logger.info("Доступ к главной странице.")
+    # Отображение главной страницы сайта
     return render(request, 'first/index.html')
 
+
 def register(request):
+    logger.info("Доступ к странице регистрации.")
+    # Отображение страницы регистрации
     return render(request, 'first/register.html')
 
+
 def login(request):
+    logger.info("Доступ к странице входа.")
+    # Отображение страницы входа
     return render(request, 'first/login.html')
 
+
 def table(request):
+    logger.info("Доступ к странице с таблицей.")
+    # Отображение страницы с таблицей (например, дебиторов)
     return render(request, 'first/table.html')
 
 
-
-
 def get_debtors(request):
-    debtors = Debtor.objects.all().values('name', 'surname', 'amount', 'address', 'region', 'city', 'created_at', 'updated_at')
+    logger.info("Получение данных о дебиторах.")
+    # Получение всех дебиторов и их информации
+    debtors = Debtor.objects.all().values('name', 'surname', 'amount', 'address', 'region', 'city', 'created_at',
+                                          'updated_at')
     debtor_list = list(debtors)  # Преобразуем QuerySet в список словарей
+    logger.info(f"Данные о дебиторах получены: {debtor_list}")
+    # Возвращаем информацию о дебиторах в формате JSON
     return JsonResponse({'debtors': debtor_list})
 
 
-
-
-
-
 def user_register(request):
-    # Проверяем, что запрос был отправлен методом POST
+    logger.info("Начало процесса регистрации пользователя.")
     if request.method == 'POST':
-        # Создаем экземпляр формы с данными из POST-запроса
         form = UserRegistrationForm(request.POST)
-
-        # Проверяем, что форма прошла валидацию
         if form.is_valid():
-            # Создаем нового пользователя, но пока не сохраняем его в базе данных (commit=False)
+            # Создание нового пользователя
             user = form.save(commit=False)
-
-            # Шифруем пароль перед сохранением в базе данных
             user.password = make_password(form.cleaned_data['password'])
-
-            # Сохраняем пользователя в базе данных
             user.save()
-
-            # Входим в систему с данным пользователем
-            auth_login(request, user)  # Вход в систему сразу после регистрации
-
-            # Выводим сообщение об успешной регистрации и входе
+            auth_login(request, user)  # Автоматический вход после регистрации
             messages.success(request, 'Ваш аккаунт был создан и вы автоматически вошли в систему.')
-
-            # Перенаправляем на главную страницу или любую другую
-            return redirect('index')  # Перенаправляем пользователя на главную страницу
-
+            logger.info(f"Пользователь {user.username} успешно зарегистрирован.")
+            return redirect('index')
         else:
-            # Если форма невалидна, выводим ошибки
             messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
-
+            logger.warning(f"Ошибка при регистрации: {form.errors}")
     else:
-        # Если запрос не POST (например, GET), создаем пустую форму для отображения на странице
         form = UserRegistrationForm()
-
-    # Отправляем форму в шаблон для отображения на странице
     return render(request, 'first/register.html', {'form': form})
 
 
-
 def login_view(request):
-    # Проверяем, что запрос был отправлен методом POST
+    logger.info("Начало процесса входа пользователя.")
     if request.method == 'POST':
-        # Создаем экземпляр формы с данными из POST-запроса
         form = LoginForm(request.POST)
-
-        # Проверяем, что форма прошла валидацию
         if form.is_valid():
-            # Извлекаем имя пользователя и пароль из очищенных данных формы
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            print(f"Username: {username}, Password: {password}")  # Отладка: выводим введенные данные
-
-            # Пытаемся аутентифицировать пользователя с введенными данными
             user = authenticate(request, username=username, password=password)
-
-            # Если аутентификация успешна (пользователь найден)
             if user is not None:
-                # Входим в систему, используя пользователя (используем псевдоним auth_login для предотвращения конфликтов)
                 auth_login(request, user)
-
-                # Перенаправляем пользователя на главную страницу (или страницу после успешного входа)
-                return redirect('index')  # Замените 'index' на имя вашей страницы
+                logger.info(f"Пользователь {username} успешно вошёл в систему.")
+                return redirect('index')
             else:
-                # Если аутентификация не удалась, выводим сообщение об ошибке
                 messages.error(request, 'Неправильное имя пользователя или пароль.')
+                logger.warning(f"Неудачная попытка входа для {username}")
         else:
-            # Если форма не прошла валидацию, выводим сообщение об ошибке
             messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
+            logger.warning(f"Ошибка при входе: {form.errors}")
     else:
-        # Если запрос не POST (например, GET), создаем пустую форму для отображения на странице
         form = LoginForm()
-
-    # Отправляем форму в шаблон для отображения на странице
     return render(request, 'first/login.html', {'form': form})
 
 
 def logout_view(request):
+    logger.info("Пользователь вышел из системы.")
     logout(request)
     return redirect('index')
 
 
-
-
 def change_password(request):
-    # Если пользователь не авторизован, перенаправляем его на страницу входа
     if not request.user.is_authenticated:
         return redirect('login')
 
-    # Если запрос POST, значит пользователь отправил форму
+    logger.info(f"Запрос на изменение пароля для пользователя {request.user.username}")
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
-
-        print(f"Данные формы: {request.POST}")  # Отладка
-
-        # Проверяем, что форма валидна
         if form.is_valid():
-            print("Форма валидна.")  # Отладка
-            # Сохраняем новый пароль
             form.save()
-
-            # Обновляем сессию пользователя, чтобы новый пароль стал активным
-            update_session_auth_hash(request, form.user)
-            print("Пароль обновлен, сессия пользователя обновлена.")  # Отладка
-
-            # Отправляем сообщение об успешной смене пароля
+            update_session_auth_hash(request, form.user)  # Обновляем сессию для пользователя
             messages.success(request, 'Ваш пароль был успешно изменен.')
-
-            # Перенаправляем на главную страницу или любую другую
+            logger.info(f"Пароль для пользователя {request.user.username} успешно изменён.")
             return redirect('index')
         else:
-            print("Форма невалидна. Ошибки формы:")  # Отладка
-            for field, errors in form.errors.items():  # Отладка ошибок
-                print(f"Поле: {field}, Ошибки: {errors}")
-
-            # Если форма невалидна, показываем сообщение об ошибке
             messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
-
+            logger.warning(f"Ошибка при изменении пароля для пользователя {request.user.username}: {form.errors}")
     else:
         form = PasswordChangeForm(user=request.user)
-
-    # Отображаем страницу с формой смены пароля
     return render(request, 'first/change_password.html', {'form': form})
 
 
 def table_view(request):
-    debtors = Debtor.objects.all()  # Загружаем всех должников из базы
-    print(debtors)  # Для отладки: выводим записи в консоль
+    logger.info("Доступ к просмотру таблицы.")
+    # Отображение таблицы с дебиторами
+    debtors = Debtor.objects.all()
+    logger.info(f"Данные о дебиторах: {debtors}")
     return render(request, 'first/table.html', {'debtors': debtors})
 
 
 @login_required
 def personal_cabinet(request):
+    logger.info(f"Доступ к личному кабинету пользователя {request.user.username}")
+    # Отображение личного кабинета пользователя, где он может видеть свои заявки
     requests = AddDebtorUser.objects.filter(user=request.user)
     return render(request, 'first/personalAccount.html', {'requests': requests})
+
 
 @login_required
 def add_request(request):
     if request.method == 'POST':
         form = DebtorRequestForm(request.POST, request.FILES)
         if form.is_valid():
+            # Сохранение новой заявки на дебитора
             debtor_request = form.save(commit=False)
             debtor_request.user = request.user
             debtor_request.save()
+            logger.info(f"Заявка на дебитора добавлена пользователем {request.user.username}")
             return redirect('personal_cabinet')
     else:
         form = DebtorRequestForm()
     return render(request, 'add_request.html', {'form': form})
+
 
 @login_required
 def edit_request(request, pk):
@@ -192,118 +160,82 @@ def edit_request(request, pk):
         form = DebtorRequestForm(request.POST, request.FILES, instance=debtor_request)
         if form.is_valid():
             form.save()
+            logger.info(f"Заявка на дебитора обновлена пользователем {request.user.username}")
             return redirect('personal_cabinet')
     else:
         form = DebtorRequestForm(instance=debtor_request)
     return render(request, 'edit_request.html', {'form': form})
+
 
 @login_required
 def delete_request(request, pk):
     debtor_request = get_object_or_404(AddDebtorUser, pk=pk, user=request.user)
     if request.method == 'POST':
         debtor_request.delete()
+        logger.info(f"Заявка на дебитора удалена пользователем {request.user.username}")
         return redirect('personal_cabinet')
     return render(request, 'delete_request.html', {'request_obj': debtor_request})
 
 
 @login_required
 def update_telegram(request):
-    """
-    Обработчик обновления Telegram-аккаунта пользователя.
-    """
     if request.method == 'POST':
-        # Получаем новое значение Telegram из запроса
         telegram = request.POST.get('telegram')
-
-        # Проверяем, что значение не пустое
         if telegram:
-            # Обновляем поле tg_account у текущего пользователя
             request.user.tg_account = telegram
             request.user.save()
-
-            # Добавляем сообщение об успешном обновлении
             messages.success(request, 'Ваш Telegram успешно обновлен!')
+            logger.info(f"Пользователь {request.user.username} обновил свой Telegram.")
         else:
-            # Если поле пустое, отправляем сообщение об ошибке
             messages.error(request, 'Поле Telegram не может быть пустым.')
-
-        # Перенаправляем обратно на страницу личного кабинета
-        return redirect('personal_cabinet')  # Убедитесь, что это имя вашей страницы
-
-    # Если метод не POST, перенаправляем обратно на личный кабинет
+            logger.warning(f"Ошибка при обновлении Telegram для пользователя {request.user.username} - поле пустое.")
+        return redirect('personal_cabinet')
     return redirect('personal_cabinet')
+
 
 @login_required
 def update_full_name(request):
-    """
-        Обработчик обновления Имени и фамилии-аккаунта пользователя.
-    """
     if request.method == 'POST':
-        # Получаем новое значение Имени и Фамилии из запроса
         name = request.POST.get('name')
         surname = request.POST.get('surname')
-
-        # Проверяем, что значение не пустое
         if name and surname:
-            # Обновляем поле tg_account у текущего пользователя
             request.user.name = name
             request.user.surname = surname
             request.user.save()
-
-            # Добавляем сообщение об успешном обновлении
-            messages.success(request, 'Ваши Имя и Фамилия успешно обновлен!')
+            messages.success(request, 'Ваши Имя и Фамилия успешно обновлены!')
+            logger.info(f"Пользователь {request.user.username} обновил Имя и Фамилию.")
         else:
-            # Если поле пустое, отправляем сообщение об ошибке
             messages.error(request, 'Поле Имя и Фамилия не может быть пустым.')
-
-        # Перенаправляем обратно на страницу личного кабинета
-        return redirect('personal_cabinet')  # Убедитесь, что это имя вашей страницы
-
-    # Если метод не POST, перенаправляем обратно на личный кабинет
+            logger.warning(
+                f"Ошибка при обновлении Имени и Фамилии для пользователя {request.user.username} - поля пустые.")
+        return redirect('personal_cabinet')
     return redirect('personal_cabinet')
-
 
 
 @login_required
 def update_email(request):
-    """
-    Обработчик обновления email-аккаунта пользователя.
-    """
     if request.method == 'POST':
-        # Получаем новое значение email из запроса
         email = request.POST.get('email')
-
-        # Проверяем, что значение не пустое
         if email:
-            # Проверяем, существует ли уже пользователь с таким email
             if NewUsers.objects.filter(email=email).exists():
-                # Если email уже используется, отправляем сообщение об ошибке
                 messages.error(request, 'Этот Email уже зарегистрирован другим пользователем.')
+                logger.warning(
+                    f"Ошибка при обновлении Email для пользователя {request.user.username} - email уже используется.")
             else:
-                # Обновляем поле email у текущего пользователя
                 request.user.email = email
                 request.user.save()
-
-                # Добавляем сообщение об успешном обновлении
                 messages.success(request, 'Ваш Email успешно обновлен!')
+                logger.info(f"Пользователь {request.user.username} обновил свой Email.")
         else:
-            # Если поле пустое, отправляем сообщение об ошибке
             messages.error(request, 'Поле Email не может быть пустым.')
-
-        # Перенаправляем обратно на страницу личного кабинета
-        return redirect('personal_cabinet')  # Убедитесь, что это имя вашей страницы
-
-    # Если метод не POST, перенаправляем обратно на личный кабинет
+            logger.warning(f"Ошибка при обновлении Email для пользователя {request.user.username} - поле пустое.")
+        return redirect('personal_cabinet')
     return redirect('personal_cabinet')
 
 
 @login_required
 def add_debtor(request):
-    """
-    Обработчик для добавления дебитора.
-    """
     if request.method == 'POST':
-        # Получаем данные из формы
         name = request.POST.get('name')
         surname = request.POST.get('surname')
         amount = request.POST.get('amount')
@@ -312,37 +244,84 @@ def add_debtor(request):
         city = request.POST.get('city')
         document = request.FILES.get('document')
 
-        # Проверка на обязательность всех полей
-        if name and surname and amount and address and region and city and document:
-            # Создаем новый объект AddDebtorUser
-            AddDebtorUser.objects.create(
-                user=request.user,  # Привязываем к текущему пользователю
-                name=name,
-                surname=surname,
-                amount=amount,
-                address=address,
-                region=region,
-                city=city,
-                document=document,
-                status='pending',  # Статус "В обработке"
-                # index_key назначается автоматически в сигнале
-            )
-            messages.success(request, 'Дебитор успешно добавлен!')
+        # Проверка обязательных полей
+        if name and surname and amount and address and region and city:
+            try:
+                AddDebtorUser.objects.create(
+                    name=name,
+                    surname=surname,
+                    amount=Decimal(amount),  # Преобразование строки в число
+                    address=address,
+                    region=region,
+                    city=city,
+                    document=document,
+                    user=request.user
+                )
+                messages.success(request, 'Дебитор успешно добавлен!')
+                logger.info(f"Дебитор {name} {surname} добавлен пользователем {request.user.username}.")
+            except InvalidOperation:
+                messages.error(request, 'Неверно введена сумма!')
+                logger.warning(f"Ошибка при добавлении дебитора {name} {surname} - неверная сумма.")
         else:
-            messages.error(request, 'Все поля обязательны для заполнения.')
+            messages.error(request, 'Заполнены не все обязательные поля!')
+            logger.warning(f"Дебитор {name} {surname} не добавлен - отсутствуют обязательные поля.")
 
-        # Перенаправляем на страницу личного кабинета или на другую страницу
-        return redirect('personal_cabinet')  # Замените на правильное имя вашего URL
+        return redirect('personal_cabinet')
+    return redirect('personal_cabinet')
 
-    # Если это GET запрос, просто перенаправляем на личный кабинет
-    else:
-        return redirect('personal_cabinet')  # Перенаправление для запросов GET
 
+@login_required
+def update_debtor(request, debtor_id):
+    # Обновление информации о дебиторе
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        surname = request.POST.get('surname')
+        amount = request.POST.get('amount')
+        address = request.POST.get('address')
+        region = request.POST.get('region')
+        city = request.POST.get('city')
+        document = request.FILES.get('document')
+
+        try:
+            debtor = AddDebtorUser.objects.get(id=debtor_id, user=request.user)
+            debtor.name = name
+            debtor.surname = surname
+            debtor.amount = amount
+            debtor.address = address
+            debtor.region = region
+            debtor.city = city
+            if document:
+                debtor.document = document
+            debtor.save()
+
+            messages.success(request, 'Информация о дебиторе успешно обновлена!')
+            logger.info(
+                f"Информация о дебиторе обновлена пользователем {request.user.username} для дебитора {debtor_id}")
+            return redirect('personal_cabinet')
+        except AddDebtorUser.DoesNotExist:
+            messages.error(request, 'Дебитор не найден.')
+            logger.error(f"Дебитор с id {debtor_id} не найден для пользователя {request.user.username}.")
+            return redirect('personal_cabinet')
+    return redirect('personal_cabinet')
+
+
+import logging
+from decimal import Decimal
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from .models import AddDebtorUser
+from django.core.exceptions import ValidationError
+from decimal import InvalidOperation
+
+# Инициализация логгера
+logger = logging.getLogger(__name__)
 
 @login_required
 def edit_debtor(request, debtor_id):
     """
     Обработчик для редактирования данных дебитора.
+    Этот метод обрабатывает POST-запросы, чтобы обновить информацию о дебиторе.
     """
     if request.method == 'POST':
         # Получаем данные из запроса
@@ -357,18 +336,25 @@ def edit_debtor(request, debtor_id):
         status = 'update_requested'  # Статус обновления
         created_at = request.POST.get('created_at')
 
-        # Находим дебитора по ID
+        # Логирование начала процесса редактирования
+        logger.info(f"Пользователь {request.user.username} начал редактирование дебитора с id {debtor_id}.")
+
+        # Находим дебитора по ID и текущему пользователю
         try:
             debtor = AddDebtorUser.objects.get(id=debtor_id, user=request.user)
+            logger.info(f"Дебитор с ID {debtor_id} найден. Начинаем обновление данных.")
         except AddDebtorUser.DoesNotExist:
             messages.error(request, "Дебитор не найден.")
+            logger.error(f"Дебитор с ID {debtor_id} не найден для пользователя {request.user.username}.")
             return redirect('personal_cabinet')
 
         # Обновляем данные, только если они были переданы в запросе
         if name:
             debtor.name = name
+            logger.info(f"Имя дебитора изменено на {name}.")
         if surname:
             debtor.surname = surname
+            logger.info(f"Фамилия дебитора изменена на {surname}.")
 
         if amount:
             try:
@@ -376,34 +362,50 @@ def edit_debtor(request, debtor_id):
                 amount = amount.replace(',', '.')
                 # Преобразуем строку в Decimal
                 debtor.amount = Decimal(amount)
+                logger.info(f"Сумма дебитора изменена на {debtor.amount}.")
             except (InvalidOperation, ValueError):
                 # Если преобразование не удалось, отправляем ошибку
                 messages.error(request, "Неверный формат суммы.")
+                logger.error(f"Ошибка преобразования суммы: неверный формат {amount}.")
                 return redirect('personal_cabinet')
 
         if address:
             debtor.address = address
+            logger.info(f"Адрес дебитора изменен на {address}.")
         if region:
             debtor.region = region
+            logger.info(f"Регион дебитора изменен на {region}.")
         if city:
             debtor.city = city
+            logger.info(f"Город дебитора изменен на {city}.")
         if update_description:  # Если описание изменений есть
             debtor.update_description = update_description
+            logger.info(f"Добавлено описание изменений: {update_description}.")
         if document:  # Если есть новый документ
             debtor.document = document
+            logger.info(f"Загружен новый документ для дебитора.")
         if created_at:
             debtor.created_at = created_at
+            logger.info(f"Дата создания дебитора обновлена на {created_at}.")
 
         # Устанавливаем статус на "На обновление"
         debtor.status = status
+        logger.info(f"Статус дебитора обновлен на 'update_requested'.")
 
-        debtor.save()  # Сохраняем изменения
+        # Сохраняем изменения
+        debtor.save()
 
+        # Уведомляем пользователя об успешном обновлении
         messages.success(request, 'Дебитор успешно обновлен! Ожидайте подтверждения от администратора.')
-        return redirect('personal_cabinet')  # Перенаправляем после успешного редактирования
+        logger.info(f"Дебитор с ID {debtor_id} успешно обновлен пользователем {request.user.username}.")
+
+        # Перенаправляем после успешного редактирования
+        return redirect('personal_cabinet')
 
     else:
-        return redirect('personal_cabinet')  # Для GET запроса, возвращаем на личный кабинет
+        # Для GET запроса, возвращаем на личный кабинет
+        logger.warning(f"Пользователь {request.user.username} пытался редактировать дебитора с ID {debtor_id} через GET-запрос.")
+        return redirect('personal_cabinet')
 
 
 
@@ -427,30 +429,21 @@ def request_deletion(request, debtor_id):
                 debtor.status = 'deleting'  # Меняем статус на 'Удаляется'
                 debtor.save()
 
+                # Уведомляем пользователя об успешном запросе на удаление
                 messages.success(request, 'Запрос на удаление успешно отправлен!')
-                return redirect('personal_cabinet')  # Перенаправляем на личный кабинет
+                logger.info(f"Пользователь {request.user.username} отправил запрос на удаление дебитора {debtor.name} {debtor.surname}.")
             else:
+                # Если форма не прошла валидацию, выводим ошибку
                 messages.error(request, 'Ошибка при отправке запроса. Пожалуйста, попробуйте снова.')
+                logger.warning(f"Пользователь {request.user.username} не смог отправить запрос на удаление дебитора {debtor.name} {debtor.surname} - ошибка в форме.")
 
         else:
             # В случае GET-запроса, просто показываем сообщение
             messages.info(request, 'Запрос на удаление дебитора')
 
-    except Debtor.DoesNotExist:
+    except AddDebtorUser.DoesNotExist:
         messages.error(request, 'Дебитор не найден.')
+        logger.error(f"Дебитор с id {debtor_id} не найден для пользователя {request.user.username}.")
 
-    return redirect('personal_cabinet')  # Перенаправляем обратно на личный кабинет
-
-def confirm_deletion(request, debtor_id):
-    debtor = get_object_or_404(Debtor, id=debtor_id)
-
-    # Проверяем, что статус "Удаляется" перед удалением
-    if debtor.status == 'deleting':
-        # Выполняем удаление записи
-        debtor.status = 'deleted'  # Меняем статус на "Удален"
-        debtor.save()
-        debtor.delete()  # Удаляем запись из базы данных
-        return redirect('admin:app_debtor_changelist')  # Админский список должников
-    else:
-        # Если статус не "deleting", значит нельзя подтвердить удаление
-        return redirect('admin:app_debtor_changelist')
+    # Перенаправляем обратно на личный кабинет
+    return redirect('personal_cabinet')

@@ -113,15 +113,11 @@
                                            data-document="{{ debtor.document.url }}">
                                            Редактировать
                                         </a>
-
-
-
                                        <!-- Кнопка для вызова модального окна -->
                                           <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
                                                       data-debtor-id="{{ debtor.id }}" data-debtor-name="{{ debtor.name }}">
                                                       Удалить
                                           </button>
-
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -176,44 +172,34 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-
-                        {% endfor %}
-                        {% for debtor in request.user.adddebtoruser_set.all %}
+                            {% endfor %}
+                            {% for debtor in request.user.adddebtoruser_set.all %}
                                 <!-- Модальное окно -->
-                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">Запрос на удаление дебитора</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                                    </div>
-                                    <form id="deleteDebtorForm" method="POST" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить дебитора <strong id="debtorName"></strong>?</p>
-                                            <div class="mb-3">
-                                                <label for="reasonInput" class="form-label">Причина удаления</label>
-                                                <textarea class="form-control" id="reasonInput" name="reason" rows="3" required></textarea>
-                                            </div>
+                            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Запрос на удаление дебитора</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                        </div>
+                                        <form id="deleteDebtorForm" method="POST" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <p>Вы уверены, что хотите удалить дебитора <strong id="debtorName"></strong>?</p>
+                                                <div class="mb-3">
+                                                    <label for="reasonInput" class="form-label">Причина удаления</label>
+                                                    <textarea class="form-control" id="reasonInput" name="reason" rows="3" required></textarea>
+                                                </div>
 
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                            <button type="submit" class="btn btn-danger">Отправить запрос</button>
-                                        </div>
-                                    </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                <button type="submit" class="btn btn-danger">Отправить запрос</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-
-
                         {% endfor %}
                         </table>
                     </div>
@@ -222,7 +208,6 @@
                     {% endif %}
                 </div>
             </div>
-
             <!-- Правая колонка с информацией -->
             <div class="col-md-4">
                 <div class="info-panel">
@@ -265,7 +250,6 @@
                                     <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                 </svg>
                             </i>
-
                             {% endif %}
                         </li>
                         <li>Дата регистрации: {{user.created_at}}</li>
