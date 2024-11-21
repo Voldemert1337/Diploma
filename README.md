@@ -44,7 +44,7 @@
 ### 1. Клонируйте репозиторий
 
 ```bash
-git clone https://github.com/ваш-репозиторий/Дипломный-проект.git
+git clone https://github.com/Voldemert1337/Diploma.git
 cd Дипломный-проект
 ```
 
