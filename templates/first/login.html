@@ -34,10 +34,8 @@
                 <div class="card">
                     <div class="card-body p-5">
                         <h2 class="text-uppercase text-center mb-5">Вход в аккаунт</h2>
-
                         <form method="post">
                             {% csrf_token %}
-
                             <!-- Выводим ошибки формы -->
                             {% if form.username.errors %}
                                 <div class="alert alert-danger">
@@ -63,7 +61,6 @@
                                 </button>
                             </div>
                         </form>
-
                         <p class="text-center text-muted mt-5 mb-0">
                             Нет аккаунта? <a href="{% url 'register' %}" class="fw-bold text-body"><u>Зарегистрируйтесь здесь</u></a>
                         </p>
@@ -73,7 +70,6 @@
         </div>
     </div>
 </section>
-
 <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
