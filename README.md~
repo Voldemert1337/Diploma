@@ -82,31 +82,22 @@ python manage.py runserver
 
 ## Скриншоты
 ### Главная страница
-![main_page.png](screenshots/main_page.png)
-
+![main_page.png](screenshots%2Fmain_page.png)
 ### Страница базы данных
-![database_page.png](screenshots/database_page.png)
-
+![database_page.png](screenshots%2Fdatabase_page.png)
 ### Страница регистрации
-![registration_page.png](screenshots/registration_page.png)
-
+![registration_page.png](screenshots%2Fregistration_page.png)
 ### Страница входа
-![login_page.png](screenshots/login_page.png)
-
+![login_page.png](screenshots%2Flogin_page.png)
 ### Личный кабинет пользователя
-![personal_cabinet.png](screenshots/personal_cabinet.png)
-
+![personal_cabinet.png](screenshots%2Fpersonal_cabinet.png)
 ### Добавление дебитора
-![add_debtor_page.png](screenshots/add_debtor_page.png)
-
+![add_debtor_page.png](screenshots%2Fadd_debtor_page.png)
 ### Редактирование дебитора
-![edit_debtor_page.png](screenshots/edit_debtor_page.png)
-
+![edit_debtor_page.png](screenshots%2Fedit_debtor_page.png)
 ### Страница смены пароля
-![change_password_page.png](screenshots/change_password_page.png)
-
+![change_password_page.png](screenshots%2Fchange_password_page.png)
 ## Структура проекта
-
 ```
 .idea/                             # Конфигурационные файлы для IDE (например, PyCharm)
 Task1/                              # Дополнительные или тестовые файлы, если есть
