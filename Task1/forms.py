@@ -163,6 +163,7 @@ class UserRegistrationForm(forms.ModelForm):
             self.fields['username'].widget.attrs.update({'class': 'form-control form-control-lg'})
             self.fields['password'].widget.attrs.update({'class': 'form-control form-control-lg'})
 
+
 class LoginForm(forms.Form):
     """
     Форма для аутентификации пользователя.
@@ -181,6 +182,7 @@ class DebtorRequestForm(forms.ModelForm):
     сумму долга, адрес и другие важные сведения, а также для загрузки документа,
     подтверждающего долг.
     """
+
     class Meta:
         model = AddDebtorUser
         fields = ['name', 'surname', 'amount', 'address', 'region', 'city', 'document']

@@ -32,11 +32,11 @@
 
                             <!-- Выводим ошибки валидации для имени пользователя -->
                             {% if form.username.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.username.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                            <div class="alert alert-danger">
+                                {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
                             {% endif %}
 
                             <!-- Выводим все поля формы -->
@@ -44,22 +44,23 @@
 
                             <!-- Выводим ошибки валидации для паролей -->
                             {% if form.password.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.password.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                            <div class="alert alert-danger">
+                                {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
                             {% endif %}
                             {% if form.password2.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.password2.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                            <div class="alert alert-danger">
+                                {% for error in form.password2.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
                             {% endif %}
 
                             <div class="d-flex justify-content-center">
-                                <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 btn-custom-text-white">
+                                <button type="submit"
+                                        class="btn btn-success btn-block btn-lg gradient-custom-4 btn-custom-text-white">
                                     Регистрация
                                 </button>
                             </div>
@@ -67,7 +68,8 @@
                         </form>
 
                         <p class="text-center text-muted mt-5 mb-0">
-                            Уже есть аккаунт? <a href="{% url 'login' %}" class="fw-bold text-body "><u>Войдите здесь</u></a>
+                            Уже есть аккаунт? <a href="{% url 'login' %}" class="fw-bold text-body "><u>Войдите
+                            здесь</u></a>
                         </p>
                     </div>
                 </div>

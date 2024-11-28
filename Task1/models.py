@@ -232,7 +232,6 @@ class Debtor(models.Model):
     index_key = models.IntegerField(null=True, verbose_name='Индекс', unique=True)
 
 
-
 class AddDebtorUser(models.Model):
     """
     Модель для добавления должников в систему.
@@ -297,7 +296,8 @@ class AddDebtorUser(models.Model):
     document = models.FileField(upload_to='documents/', verbose_name="Документ")
     index_key = models.IntegerField(unique=True, verbose_name="Индекс", null=True, blank=True)
     deletion_reason = models.TextField(null=True, blank=True, verbose_name='Причина удаления')
-    deletion_document = models.FileField(upload_to='deletion_documents/', null=True, blank=True, verbose_name='Документ удаления')
+    deletion_document = models.FileField(upload_to='deletion_documents/', null=True, blank=True,
+                                         verbose_name='Документ удаления')
 
     def __str__(self):
         """
@@ -360,4 +360,3 @@ def set_index_key(sender, instance, **kwargs):
     if instance.pk is None:  # Новый объект
         last_debtor = AddDebtorUser.objects.aggregate(Max('index_key'))['index_key__max']
         instance.index_key = 1 if last_debtor is None else last_debtor + 1
-

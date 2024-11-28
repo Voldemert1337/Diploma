@@ -38,31 +38,33 @@
                             {% csrf_token %}
                             <!-- Выводим ошибки формы -->
                             {% if form.username.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.username.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                            <div class="alert alert-danger">
+                                {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
                             {% endif %}
                             {% if form.password.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.password.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                            <div class="alert alert-danger">
+                                {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
                             {% endif %}
 
                             <!-- Поля формы -->
                             {{ form.as_p }}
 
                             <div class="d-flex justify-content-center">
-                                <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                <button type="submit"
+                                        class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                     Войти
                                 </button>
                             </div>
                         </form>
                         <p class="text-center text-muted mt-5 mb-0">
-                            Нет аккаунта? <a href="{% url 'register' %}" class="fw-bold text-body"><u>Зарегистрируйтесь здесь</u></a>
+                            Нет аккаунта? <a href="{% url 'register' %}" class="fw-bold text-body"><u>Зарегистрируйтесь
+                            здесь</u></a>
                         </p>
                     </div>
                 </div>

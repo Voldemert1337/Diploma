@@ -95,6 +95,7 @@ class AddDebtorUserAdmin(admin.ModelAdmin):
                 logger.warning(
                     f"Дебитор {debtor.name} {debtor.surname} не был одобрен, его статус не 'pending'."
                 )
+
     approve_selected.short_description = "Одобрить выбранных дебиторов"
 
     def reject_selected(self, request, queryset):
@@ -238,4 +239,3 @@ class NewUsersAdmin(UserAdmin):
 
     # Сортировка по умолчанию
     ordering = ('username',)
-

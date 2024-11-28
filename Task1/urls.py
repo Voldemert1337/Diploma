@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('', views.index, name='index'),
     path('get_debtors/', views.get_debtors, name='get_debtors'),
@@ -23,5 +22,3 @@ urlpatterns = [
     path('delete-debtor/<int:debtor_id>/', views.request_deletion, name='delete_debtor'),
 
 ]
-
-

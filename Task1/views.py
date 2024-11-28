@@ -87,7 +87,6 @@ def table(request):
     return render(request, 'first/table.html')
 
 
-
 def get_debtors(request):
     """
     Получает данные о всех дебиторах и возвращает их в формате JSON.
@@ -185,7 +184,6 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'first/login.html', {'form': form})
-
 
 
 def logout_view(request):
@@ -558,7 +556,8 @@ def update_debtor(request, debtor_id):
             debtor.save()
 
             messages.success(request, 'Информация о дебиторе успешно обновлена!')
-            logger.info(f"Информация о дебиторе обновлена пользователем {request.user.username} для дебитора {debtor_id}")
+            logger.info(
+                f"Информация о дебиторе обновлена пользователем {request.user.username} для дебитора {debtor_id}")
             return redirect('personal_cabinet')
         except AddDebtorUser.DoesNotExist:
             messages.error(request, 'Дебитор не найден.')
@@ -705,11 +704,13 @@ def request_deletion(request, debtor_id):
 
                 # Уведомляем пользователя об успешном запросе на удаление
                 messages.success(request, 'Запрос на удаление успешно отправлен!')
-                logger.info(f"Пользователь {request.user.username} отправил запрос на удаление дебитора {debtor.name} {debtor.surname}.")
+                logger.info(
+                    f"Пользователь {request.user.username} отправил запрос на удаление дебитора {debtor.name} {debtor.surname}.")
             else:
                 # Если форма не прошла валидацию, выводим ошибку
                 messages.error(request, 'Ошибка при отправке запроса. Пожалуйста, попробуйте снова.')
-                logger.warning(f"Пользователь {request.user.username} не смог отправить запрос на удаление дебитора {debtor.name} {debtor.surname} - ошибка в форме.")
+                logger.warning(
+                    f"Пользователь {request.user.username} не смог отправить запрос на удаление дебитора {debtor.name} {debtor.surname} - ошибка в форме.")
 
         else:
             # В случае GET-запроса, просто показываем сообщение
@@ -721,5 +722,3 @@ def request_deletion(request, debtor_id):
 
     # Перенаправляем обратно на личный кабинет
     return redirect('personal_cabinet')
-
-
